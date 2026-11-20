@@ -1,0 +1,89 @@
+﻿@using System.Text.Json
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Environment
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    string NavClass(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) ? "app-nav-link active" : "app-nav-link";
+    string? AriaCurrent(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) ? "page" : null;
+
+    var status = TempData.GetStatus();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="request-verification-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+    <title>@ViewData["Title"] · NamClient</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <partial name="_Icons" />
+    <a class="visually-hidden-focusable skip-link" href="#main">Skip to content</a>
+
+    <div class="app-shell">
+        <aside class="app-sidebar offcanvas offcanvas-start" id="app-sidebar" tabindex="-1" aria-label="Main navigation">
+            <div class="offcanvas-header">
+                <span class="app-brand"><span class="app-brand-mark">N</span>NamClient</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>
+            </div>
+            <div class="offcanvas-body d-flex flex-column">
+                <a class="app-brand d-none d-lg-flex" asp-controller="Home" asp-action="Index">
+                    <span class="app-brand-mark">N</span>NamClient
+                </a>
+
+                <nav class="app-nav">
+                    <a class="@NavClass("Home")" aria-current="@AriaCurrent("Home")" asp-controller="Home" asp-action="Index">
+                        <icon name="home" /> Dashboard
+                    </a>
+                    <a class="@NavClass("Clients")" aria-current="@AriaCurrent("Clients")" asp-controller="Clients" asp-action="Index">
+                        <icon name="building" /> Clients
+                    </a>
+                    <a class="@NavClass("Contacts")" aria-current="@AriaCurrent("Contacts")" asp-controller="Contacts" asp-action="Index">
+                        <icon name="users" /> Contacts
+                    </a>
+
+                    @if (Environment.IsDevelopment())
+                    {
+                        <div class="app-nav-section">Developer</div>
+                        <a class="@NavClass("Maintenance")" aria-current="@AriaCurrent("Maintenance")" asp-controller="Maintenance" asp-action="Index">
+                            <icon name="database" /> Maintenance
+                        </a>
+                    }
+                </nav>
+
+                <div class="app-sidebar-footer mt-auto">Client &amp; contact manager</div>
+            </div>
+        </aside>
+
+        <div class="app-main">
+            <header class="app-topbar d-lg-none">
+                <button class="btn btn-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#app-sidebar" aria-controls="app-sidebar" aria-label="Open menu">
+                    <icon name="menu" />
+                </button>
+                <span class="app-brand"><span class="app-brand-mark">N</span>NamClient</span>
+            </header>
+
+            <main id="main" class="app-content" role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <partial name="_ConfirmModal" />
+
+    @if (status is not null)
+    {
+        <script type="application/json" id="initial-status">@Html.Raw(JsonSerializer.Serialize(new { text = status.Text, isError = status.IsError }))</script>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

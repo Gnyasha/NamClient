@@ -1,0 +1,63 @@
+@model ContactClientsPanelViewModel
+
+@if (Model.Status is not null)
+{
+    <partial name="_StatusMessage" model="Model.Status" />
+}
+<div hidden data-linked-count="@Model.Clients.Count"></div>
+
+<div class="panel-toolbar">
+    <div class="toolbar-main" data-toolbar-default>
+        <span class="text-muted-app">Linked clients</span>
+        <div class="toolbar-spacer"></div>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#link-picker">
+            <icon name="link" /> Link clients
+        </button>
+    </div>
+    <div class="bulk-bar" data-toolbar-bulk hidden>
+        <span class="bulk-count" data-bulk-count aria-live="polite"></span>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bulk-unlink><icon name="unlink" /> Unlink selected</button>
+        <div class="toolbar-spacer"></div>
+        <button type="button" class="btn btn-light btn-sm" data-bulk-clear><icon name="x" /> Clear selection</button>
+    </div>
+</div>
+
+@if (Model.Clients.Count == 0)
+{
+    <div class="empty-state">
+        <div class="empty-state-icon"><icon name="building" /></div>
+        @* Wording exactly as in the specification. *@
+        <p class="empty-message">No contact(s) found.</p>
+    </div>
+}
+else
+{
+    <div class="data-table-wrap">
+        <table class="table table-hover data-table align-middle">
+            <caption class="visually-hidden">Clients linked to this contact. Right-click a row for actions.</caption>
+            <thead>
+                <tr>
+                    <th class="col-select" scope="col">
+                        <input class="form-check-input" type="checkbox" data-select-all aria-label="Select all linked clients" />
+                    </th>
+                    <th class="text-start" scope="col">Client name</th>
+                    <th class="text-start" scope="col">Client code</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var client in Model.Clients)
+                {
+                    <tr data-href="@Url.Action("Edit", "Clients", new { id = client.ClientId })" data-id="@client.ClientId" data-label="@client.Name">
+                        <td class="col-select">
+                            <input class="form-check-input" type="checkbox" data-select value="@client.ClientId" aria-label="Select @client.Name" />
+                        </td>
+                        <td class="text-start">
+                            <a class="row-title" asp-controller="Clients" asp-action="Edit" asp-route-id="@client.ClientId">@client.Name</a>
+                        </td>
+                        <td class="text-start"><span class="code-badge">@client.ClientCode</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

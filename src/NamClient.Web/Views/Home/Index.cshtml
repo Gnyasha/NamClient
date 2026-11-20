@@ -1,0 +1,108 @@
+@using NamClient.Web.Infrastructure
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Overview</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Contacts" asp-action="Create" class="btn btn-light"><icon name="plus" /> New contact</a>
+        <a asp-controller="Clients" asp-action="Create" class="btn btn-primary"><icon name="plus" /> New client</a>
+    </div>
+</div>
+
+@if (Model.IsEmpty)
+{
+    <div class="callout">
+        <div>
+            <strong>No data yet.</strong>
+            <span class="text-muted-app">Create a client or a contact to get started, then link them together.</span>
+        </div>
+        <a asp-controller="Clients" asp-action="Create" class="btn btn-primary"><icon name="plus" /> New client</a>
+    </div>
+}
+
+<div class="stat-grid">
+    <a class="app-card stat-card" asp-controller="Clients" asp-action="Index">
+        <div class="stat-label"><span class="stat-icon"><icon name="building" /></span> Clients</div>
+        <div class="stat-value">@Model.TotalClients.ToString("N0")</div>
+    </a>
+    <a class="app-card stat-card" asp-controller="Contacts" asp-action="Index">
+        <div class="stat-label"><span class="stat-icon"><icon name="users" /></span> Contacts</div>
+        <div class="stat-value">@Model.TotalContacts.ToString("N0")</div>
+    </a>
+    <div class="app-card stat-card">
+        <div class="stat-label"><span class="stat-icon"><icon name="link" /></span> Client-contact links</div>
+        <div class="stat-value">@Model.TotalLinks.ToString("N0")</div>
+    </div>
+    <div class="app-card stat-card">
+        <div class="stat-label"><span class="stat-icon is-warning"><icon name="alert" /></span> Clients without contacts</div>
+        <div class="stat-value">@Model.ClientsWithoutContacts.ToString("N0")</div>
+    </div>
+    <div class="app-card stat-card">
+        <div class="stat-label"><span class="stat-icon is-warning"><icon name="alert" /></span> Contacts without clients</div>
+        <div class="stat-value">@Model.ContactsWithoutClients.ToString("N0")</div>
+    </div>
+</div>
+
+<div class="dashboard-columns">
+    <section class="app-card" aria-labelledby="recent-clients">
+        <div class="app-card-header">
+            <h2 class="app-card-title" id="recent-clients">Recently added clients</h2>
+            <a asp-controller="Clients" asp-action="Index" class="small">View all</a>
+        </div>
+        @if (Model.RecentClients.Count == 0)
+        {
+            <div class="empty-state"><p class="empty-hint">No clients yet.</p></div>
+        }
+        else
+        {
+            <ul class="recent-list">
+                @foreach (var client in Model.RecentClients)
+                {
+                    <li>
+                        <a class="recent-item" asp-controller="Clients" asp-action="Edit" asp-route-id="@client.Id">
+                            <span>
+                                <span class="recent-title d-block">@client.Title</span>
+                                <span class="code-badge">@client.Subtitle</span>
+                            </span>
+                            <span class="recent-date">@DateDisplay.Relative(client.CreatedAt)</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="app-card" aria-labelledby="recent-contacts">
+        <div class="app-card-header">
+            <h2 class="app-card-title" id="recent-contacts">Recently added contacts</h2>
+            <a asp-controller="Contacts" asp-action="Index" class="small">View all</a>
+        </div>
+        @if (Model.RecentContacts.Count == 0)
+        {
+            <div class="empty-state"><p class="empty-hint">No contacts yet.</p></div>
+        }
+        else
+        {
+            <ul class="recent-list">
+                @foreach (var contact in Model.RecentContacts)
+                {
+                    <li>
+                        <a class="recent-item" asp-controller="Contacts" asp-action="Edit" asp-route-id="@contact.Id">
+                            <span>
+                                <span class="recent-title d-block">@contact.Title</span>
+                                <span class="recent-subtitle">@contact.Subtitle</span>
+                            </span>
+                            <span class="recent-date">@DateDisplay.Relative(contact.CreatedAt)</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>

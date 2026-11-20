@@ -1,0 +1,23 @@
+@model PagerViewModel
+<div class="pager">
+    <div data-total="@Model.Total" data-lower-bound="@(Model.TotalIsLowerBound ? "true" : "false")">@Model.Summary</div>
+    <nav class="d-flex gap-2" aria-label="Pages">
+        @if (Model.PreviousUrl is not null)
+        {
+            <a class="btn btn-light" href="@Model.PreviousUrl" rel="prev" data-list-nav><icon name="chevron-left" /> Previous</a>
+        }
+        else
+        {
+            <span class="btn btn-light disabled" aria-disabled="true"><icon name="chevron-left" /> Previous</span>
+        }
+
+        @if (Model.NextUrl is not null)
+        {
+            <a class="btn btn-light" href="@Model.NextUrl" rel="next" data-list-nav>Next <icon name="chevron-right" /></a>
+        }
+        else
+        {
+            <span class="btn btn-light disabled" aria-disabled="true">Next <icon name="chevron-right" /></span>
+        }
+    </nav>
+</div>

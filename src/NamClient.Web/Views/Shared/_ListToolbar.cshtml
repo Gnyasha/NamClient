@@ -1,0 +1,35 @@
+@model ListToolbarViewModel
+<div class="list-toolbar">
+    <div class="toolbar-main" data-toolbar-default>
+        <form class="search-box" method="get" action="@Model.ListUrl" role="search" data-list-search>
+            <icon name="search" />
+            <label for="list-search" class="visually-hidden">Search @Model.NounPlural</label>
+            <input id="list-search" class="form-control" type="search" name="q" value="@Model.Search"
+                   placeholder="@Model.SearchPlaceholder" autocomplete="off" maxlength="100" />
+            <kbd class="search-hint" aria-hidden="true" title="Press / to search">/</kbd>
+        </form>
+
+        <div class="toolbar-spacer"></div>
+
+        <label for="list-size" class="visually-hidden">Rows per page</label>
+        <select id="list-size" class="form-select toolbar-size" data-list-size>
+            @foreach (var size in PageRequest.PageSizes)
+            {
+                <option value="@size" selected="@(size == Model.PageSize)">@size per page</option>
+            }
+        </select>
+
+        <button type="button" class="btn btn-light" data-export title="Download the list as CSV">
+            <icon name="download" /> Export
+        </button>
+    </div>
+
+    <div class="bulk-bar" data-toolbar-bulk hidden>
+        <span class="bulk-count" data-bulk-count aria-live="polite"></span>
+        <span class="bulk-note" data-bulk-note hidden></span>
+        <button type="button" class="btn btn-light btn-sm" data-bulk-export><icon name="download" /> Export selected</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bulk-delete data-busy-label="Deleting…"><icon name="trash" /> Delete selected</button>
+        <div class="toolbar-spacer"></div>
+        <button type="button" class="btn btn-light btn-sm" data-bulk-clear><icon name="x" /> Clear selection</button>
+    </div>
+</div>

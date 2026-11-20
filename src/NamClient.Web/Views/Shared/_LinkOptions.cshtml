@@ -1,0 +1,27 @@
+@model LinkOptionsViewModel
+@if (Model.Options.Count == 0)
+{
+    <div class="picker-empty">
+        @(Model.Search is null ? "Nothing left to link." : $"No matches for “{Model.Search}”.")
+    </div>
+}
+else
+{
+    <div role="group" aria-label="Search results">
+        @foreach (var option in Model.Options)
+        {
+            <label class="picker-option">
+                <input class="form-check-input" type="checkbox" value="@option.Id" />
+                <span>
+                    <span class="picker-title d-block">@option.Title</span>
+                    <span class="picker-subtitle">@option.Subtitle</span>
+                </span>
+            </label>
+        }
+    </div>
+
+    @if (Model.HasMore)
+    {
+        <p class="picker-note">Showing the first @Model.Options.Count matches. Keep typing to narrow them down.</p>
+    }
+}

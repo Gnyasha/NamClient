@@ -1,0 +1,14 @@
+@model SortHeaderViewModel
+@{
+    var icon = !Model.IsActive ? "sort" : Model.IsDescending ? "arrow-down" : "arrow-up";
+    var hint = !Model.IsActive
+        ? $"Sort by {Model.Label}"
+        : $"Sorted {(Model.IsDescending ? "descending" : "ascending")}; select to reverse";
+}
+<th class="@Model.CssClass" scope="col" aria-sort="@Model.AriaSort">
+    <a class="sort-link" href="@Model.Url" data-list-nav title="@hint">
+        @Model.Label
+        <icon name="@icon" />
+        <span class="visually-hidden">(@hint)</span>
+    </a>
+</th>

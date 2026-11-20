@@ -1,0 +1,67 @@
+@model ListPageViewModel<ClientListItemViewModel>
+@{
+    var page = Model.Page;
+    var request = Model.Request;
+
+    // Leave defaults out of URLs so they stay short and shareable.
+    string? SortParam(string sort) => sort == "name" ? null : sort;
+    int? SizeParam() => request.PageSize == PageRequest.DefaultPageSize ? null : request.PageSize;
+
+    string ListUrl(string sort, string? after = null, string? before = null) =>
+        Url.Action("Index", new { q = request.Search, sort = SortParam(sort), size = SizeParam(), after, before })!;
+
+    SortHeaderViewModel Header(string label, string key, string css)
+    {
+        var header = new SortHeaderViewModel(label, key, Model.Sort, string.Empty, css);
+        return header with { Url = ListUrl(header.NextSort) };
+    }
+}
+
+@if (page.Items.Count == 0)
+{
+    <div class="empty-state">
+        <div class="empty-state-icon"><icon name="@(request.HasSearch ? "search" : "building")" /></div>
+        <p class="empty-message">No client(s) found.</p>
+    </div>
+}
+else
+{
+    <div class="data-table-wrap">
+        <table class="table table-hover data-table align-middle">
+            <caption class="visually-hidden">Clients. Select a row to open the client.</caption>
+            <thead>
+                <tr>
+                    <th class="col-select" scope="col">
+                        <input class="form-check-input" type="checkbox" data-select-all aria-label="Select all clients on this page" />
+                    </th>
+                    @await Html.PartialAsync("_SortHeader", Header("Name", "name", "text-start"))
+                    @await Html.PartialAsync("_SortHeader", Header("Client code", "code", "text-start"))
+                    <th class="text-center" scope="col">No. of linked contacts</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var client in page.Items)
+                {
+                    <tr data-href="@Url.Action("Edit", new { id = client.ClientId })" data-id="@client.ClientId">
+                        <td class="col-select">
+                            <input class="form-check-input" type="checkbox" data-select value="@client.ClientId" aria-label="Select @client.Name" />
+                        </td>
+                        <td class="text-start">
+                            <a class="row-title" asp-action="Edit" asp-route-id="@client.ClientId">@client.Name</a>
+                        </td>
+                        <td class="text-start"><span class="code-badge">@client.ClientCode</span></td>
+                        <td class="text-center"><span class="count-pill">@client.LinkedContactCount.ToString("0")</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync("_Pager", new PagerViewModel(
+        page.Items.Count,
+        page.TotalCount,
+        page.TotalIsLowerBound,
+        request.HasSearch ? "matching clients" : "clients",
+        page.HasPrevious ? ListUrl(Model.Sort, before: page.PreviousCursor) : null,
+        page.HasNext ? ListUrl(Model.Sort, after: page.NextCursor) : null))
+}

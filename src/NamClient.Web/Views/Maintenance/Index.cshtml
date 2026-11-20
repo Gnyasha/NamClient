@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Maintenance";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Maintenance</h1>
+        <p class="page-subtitle">Developer tools. Only available in the Development environment.</p>
+    </div>
+</div>
+
+<section class="app-card danger-zone form-narrow" aria-labelledby="clear-heading">
+    <div class="app-card-body">
+        <h2 class="h5" id="clear-heading">Delete all data</h2>
+        <p class="text-muted-app">Removes every client, contact and link, and restarts the ids at 1.</p>
+        <button type="button" class="btn btn-outline-danger"
+                data-ajax-post="@Url.Action("DeleteAll")"
+                data-busy-label="Deleting…"
+                data-danger="true"
+                data-confirm-title="Delete all data?"
+                data-confirm="Every client, contact and link will be permanently deleted. This can't be undone."
+                data-confirm-text="Delete everything">
+            <icon name="trash" /> Delete all data
+        </button>
+    </div>
+</section>

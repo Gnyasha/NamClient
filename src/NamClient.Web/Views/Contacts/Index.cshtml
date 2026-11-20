@@ -1,0 +1,34 @@
+@model ListPageViewModel<ContactListItemViewModel>
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Contacts</h1>
+        <p class="page-subtitle">Right-click a row for more actions.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary"><icon name="plus" /> New contact</a>
+    </div>
+</div>
+
+<section class="app-card" aria-label="Contact list"
+         data-list
+         data-url="@Url.Action("Index")"
+         data-export-url="@Url.Action("Export")"
+         data-delete-url="@Url.Action("Delete")"
+         data-noun="contact"
+         data-noun-plural="contacts">
+
+    @await Html.PartialAsync("_ListToolbar", new ListToolbarViewModel(
+        Url.Action("Index")!, "contacts", "Search contacts, e.g. thandi or nkosi", Model.Request.Search, Model.Request.PageSize))
+
+    <div data-list-body>
+        <partial name="_ContactsTable" model="Model" />
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/list-page.js" asp-append-version="true"></script>
+}
